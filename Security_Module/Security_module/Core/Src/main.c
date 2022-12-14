@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include<stdio.h>
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -40,6 +40,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+TIM_HandleTypeDef htim1;
+
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
@@ -49,250 +51,290 @@ UART_HandleTypeDef huart2;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_TIM1_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
- char read_char();
- void LCD();
- int strcmparr( volatile char arr1[],char arr2[],int size);
+#define RS_Pin GPIO_PIN_1
+#define RS_GPIO_Port GPIOA
+#define RW_Pin GPIO_PIN_0
+#define RW_GPIO_Port GPIOA
+#define EN_Pin GPIO_PIN_3
+#define EN_GPIO_Port GPIOA
+#define D4_Pin GPIO_PIN_4
+#define D4_GPIO_Port GPIOA
+#define D5_Pin GPIO_PIN_5
+#define D5_GPIO_Port GPIOA
+#define D6_Pin GPIO_PIN_6
+#define D6_GPIO_Port GPIOA
+#define D7_Pin GPIO_PIN_7
+#define D7_GPIO_Port GPIOA
+#define timer htim1
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void LCD(){
-	//delay
-	HAL_Delay(20);
-	//Set Function
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_4,GPIO_PIN_RESET);//data 0 
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_8,GPIO_PIN_SET); //data 3
-	
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_3,GPIO_PIN_SET);//data 4
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_2,GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_6,GPIO_PIN_RESET); //data 7
-	
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_7,GPIO_PIN_RESET);  //RS
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET); //RW
-	//HAL_GPIO_WritePin(GPIOA,GPIO_PIN_10,GPIO_PIN_SET); //E
-	
-	
-	HAL_Delay(20);
-	// Display control
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_4,GPIO_PIN_SET);//data 0 
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_8,GPIO_PIN_SET); //data 3
-	
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_3,GPIO_PIN_RESET);//data 4
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_2,GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_6,GPIO_PIN_RESET); //data 7
-	
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_7,GPIO_PIN_RESET);  //RS
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET); //RW
-	//HAL_GPIO_WritePin(GPIOA,GPIO_PIN_10,GPIO_PIN_SET); //E
-	
-	HAL_Delay(20);
-	
-	//Clear
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_4,GPIO_PIN_SET);//data 0 
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_8,GPIO_PIN_RESET); //data 3
-	
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_3,GPIO_PIN_RESET);//data 4
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_2,GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_6,GPIO_PIN_RESET); //data 7
-	
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_7,GPIO_PIN_RESET);  //RS
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET); //RW
-	//HAL_GPIO_WritePin(GPIOA,GPIO_PIN_10,GPIO_PIN_SET); //E
-	HAL_Delay(20);
-	
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_10,GPIO_PIN_SET); //E
-	
-	//display
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_4,GPIO_PIN_RESET);//data 0 
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_8,GPIO_PIN_RESET); //data 3
-	
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_3,GPIO_PIN_SET);//data 4
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_2,GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_6,GPIO_PIN_RESET); //data 7
 
-		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_7,GPIO_PIN_SET);  //RS
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET); //RW
-//		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_4,GPIO_PIN_SET);//data 0 
-//	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_SET);
-//	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_SET);
-//	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_8,GPIO_PIN_SET); //data 3
-//	
-//	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_3,GPIO_PIN_SET);//data 4
-//	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_2,GPIO_PIN_SET);
-//	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET);
-//	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_6,GPIO_PIN_SET); //data 7
+extern TIM_HandleTypeDef timer;
+void delay (uint16_t us)
+{
+	__HAL_TIM_SET_COUNTER(&timer, 0);
+	while (__HAL_TIM_GET_COUNTER(&timer) < us);
+}
 
-//	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET); //RW
-//	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_7,GPIO_PIN_SET);  //RS
-	
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_10,GPIO_PIN_RESET); //E
-	}
- char read_char(){
+
+void send_to_lcd (char data, int rs)
+{
+	HAL_GPIO_WritePin(RS_GPIO_Port, RS_Pin, rs);  // rs = 1 for data, rs=0 for command
+
+	/* write the data to the respective pin */
+	HAL_GPIO_WritePin(D7_GPIO_Port, D7_Pin, ((data>>3)&0x01));
+	HAL_GPIO_WritePin(D6_GPIO_Port, D6_Pin, ((data>>2)&0x01));
+	HAL_GPIO_WritePin(D5_GPIO_Port, D5_Pin, ((data>>1)&0x01));
+	HAL_GPIO_WritePin(D4_GPIO_Port, D4_Pin, ((data>>0)&0x01));
+
+	/* Toggle EN PIN to send the data
+	 * if the HCLK > 100 MHz, use the  20 us delay
+	 * if the LCD still doesn't work, increase the delay to 50, 80 or 100..
+	 */
+	HAL_GPIO_WritePin(EN_GPIO_Port, EN_Pin, 1);
+	delay (20);
+	HAL_GPIO_WritePin(EN_GPIO_Port, EN_Pin, 0);
+	delay (20);
+}
+
+void lcd_send_cmd (char cmd)
+{
+    char datatosend;
+
+    /* send upper nibble first */
+    datatosend = ((cmd>>4)&0x0f);
+    send_to_lcd(datatosend,0);  // RS must be 0 while sending command
+
+    /* send Lower Nibble */
+    datatosend = ((cmd)&0x0f);
+	send_to_lcd(datatosend, 0);
+}
+
+void lcd_send_data (char data)
+{
+	char datatosend;
+
+	/* send higher nibble */
+	datatosend = ((data>>4)&0x0f);
+	send_to_lcd(datatosend, 1);  // rs =1 for sending data
+
+	/* send Lower nibble */
+	datatosend = ((data)&0x0f);
+	send_to_lcd(datatosend, 1);
+}
+
+void lcd_clear (void)
+{
+	lcd_send_cmd(0x01);
+	HAL_Delay(2);
+}
+
+void lcd_put_cur(int row, int col)
+{
+    switch (row)
+    {
+        case 0:
+            col |= 0x80;
+            break;
+        case 1:
+            col |= 0xC0;
+            break;
+    }
+
+    lcd_send_cmd (col);
+}
+
+
+void lcd_init (void)
+{
+	// 4 bit initialisation
+	HAL_Delay(50);  // wait for >40ms
+	lcd_send_cmd (0x30);
+	HAL_Delay(5);  // wait for >4.1ms
+	lcd_send_cmd (0x30);
+	HAL_Delay(1);  // wait for >100us
+	lcd_send_cmd (0x30);
+	HAL_Delay(10);
+	lcd_send_cmd (0x20);  // 4bit mode
+	HAL_Delay(10);
+
+  // dislay initialisation
+	lcd_send_cmd (0x28); // Function set --> DL=0 (4 bit mode), N = 1 (2 line display) F = 0 (5x8 characters)
+	HAL_Delay(1);
+	lcd_send_cmd (0x08); //Display on/off control --> D=0,C=0, B=0  ---> display off
+	HAL_Delay(1);
+	lcd_send_cmd (0x01);  // clear display
+	HAL_Delay(1);
+	HAL_Delay(1);
+	lcd_send_cmd (0x06); //Entry mode set --> I/D = 1 (increment cursor) & S = 0 (no shift)
+	HAL_Delay(1);
+	lcd_send_cmd (0x0D); //Display on/off control --> D = 1, C and B = 0. (Cursor and blink, last two bits)
+}
+
+void lcd_send_string (char *str)
+{
+	while (*str) lcd_send_data (*str++);
+}
+
+char read_char(){
 	 
 	 
 	 //____________________________Col1________________________________//
 	 uint8_t a='_';
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_0,GPIO_PIN_SET); //col4
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_1,GPIO_PIN_SET);
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_3,GPIO_PIN_SET);
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_RESET);//col1
+HAL_GPIO_WritePin(GPIOB,GPIO_PIN_4,GPIO_PIN_SET); //col4
+HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_SET);
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_SET);
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_8,GPIO_PIN_RESET);//col1
 	 
 
-	 if (!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0)){ //row1
+	 if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_9)){ //row1
 		 a='1';
-		 while(!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0)){};
+		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_9)){};
 			//HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
 		 return a;
 		 
 	 }
 	 
-	  else if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_7)){
+	  else if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_10)){
 			a='4';
-		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_7)){};
+		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_10)){};
 			//HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
 		 return a;
 	 }
 		
-	  else if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_6)){
+	  else if (!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0)){
 			a='7';
-		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_6)){};
+		 while(!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0)){};
 			//	HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
 		 return a;
 	 }
 		
-	  else if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_5)){//row4
+	  else if (!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_1)){//row4
 			a='0';
 			
-		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_5)){};
+		 while(!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_1)){};
 		//	HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
 				 return a;
 	 }
 			 //____________________________Col2________________________________//
 	
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_0,GPIO_PIN_SET); //col4
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_1,GPIO_PIN_SET);
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_3,GPIO_PIN_RESET);
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_SET);//col1
+	  a='_';
+HAL_GPIO_WritePin(GPIOB,GPIO_PIN_4,GPIO_PIN_SET); //col4
+HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_SET);
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET);
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_8,GPIO_PIN_SET);//col1
 	 
 
-	 if (!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0)){ //row1
-		  a='2';
-		 while(!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0)){};
-			//	HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
+	 if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_9)){ //row1
+		 a='2';
+		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_9)){};
+			//HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
 		 return a;
 		 
 	 }
 	 
-	  else if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_7)){
+	  else if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_10)){
 			a='5';
-		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_7)){};
-			//	HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
+		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_10)){};
+			//HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
 		 return a;
 	 }
 		
-	  else if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_6)){
+	  else if (!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0)){
 			a='8';
-		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_6)){};
+		 while(!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0)){};
 			//	HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
 		 return a;
 	 }
 		
-	  else if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_5)){//row4
+	  else if (!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_1)){//row4
 			a='F';
 			
-		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_5)){};
+		 while(!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_1)){};
 		//	HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
 				 return a;
-		}
-		
+	 }
 					 //____________________________Col3________________________________//
 	
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_0,GPIO_PIN_SET); //col4
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_1,GPIO_PIN_RESET);
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_3,GPIO_PIN_SET);
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_SET);//col1
+	  a='_';
+HAL_GPIO_WritePin(GPIOB,GPIO_PIN_4,GPIO_PIN_SET); //col4
+HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_RESET);
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_SET);
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_8,GPIO_PIN_SET);//col1
 	 
 
-	 if (!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0)){ //row1
-		  a='3';
-		 while(!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0)){};
-			//	HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
+	 if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_9)){ //row1
+		 a='3';
+		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_9)){};
+			//HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
 		 return a;
 		 
 	 }
 	 
-	  else if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_7)){
+	  else if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_10)){
 			a='6';
-		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_7)){};
-		//		HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
+		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_10)){};
+			//HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
 		 return a;
 	 }
 		
-	  else if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_6)){
+	  else if (!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0)){
 			a='9';
-		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_6)){};
+		 while(!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0)){};
 			//	HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
 		 return a;
 	 }
 		
-	  else if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_5)){//row4
+	  else if (!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_1)){//row4
 			a='E';
 			
-		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_5)){};
+		 while(!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_1)){};
 		//	HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
 				 return a;
-		}
+	 }
 			 //____________________________Col4________________________________//
 	
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_0,GPIO_PIN_RESET); //col4
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_1,GPIO_PIN_SET);
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_3,GPIO_PIN_SET);
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_SET);//col1
+	  a='_';
+HAL_GPIO_WritePin(GPIOB,GPIO_PIN_4,GPIO_PIN_RESET); //col4
+HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_SET);
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_SET);
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_8,GPIO_PIN_SET);//col1
 	 
 
-	 if (!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0)){ //row1
-		  a='A';
-		 while(!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0)){};
-		//		HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
+	 if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_9)){ //row1
+		 a='A';
+		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_9)){};
+			//HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
 		 return a;
 		 
 	 }
 	 
-	  else if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_7)){
+	  else if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_10)){
 			a='B';
-		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_7)){};
-				//HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
+		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_10)){};
+			//HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
 		 return a;
 	 }
 		
-	  else if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_6)){
+	  else if (!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0)){
 			a='C';
-		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_6)){};
+		 while(!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0)){};
 			//	HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
 		 return a;
 	 }
 		
-	  else if (!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_5)){//row4
+	  else if (!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_1)){//row4
 			a='D';
 			
-		 while(!HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_5));
-			//HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
+		 while(!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_1)){};
+		//	HAL_UART_Transmit(&huart2,&a,sizeof(a),100);
 				 return a;
-		}
+	 }
 return a;
  
  }
@@ -303,6 +345,7 @@ return a;
 		}
 return 1;
 }
+
 /* USER CODE END 0 */
 
 /**
@@ -333,50 +376,88 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_TIM1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+	HAL_TIM_Base_Start(&htim1);
+  lcd_init ();
+  lcd_put_cur(0, 0);
+	  lcd_clear();
+	lcd_send_string("PASS");
+	lcd_send_string("");
+	lcd_put_cur(1, 0);
 
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
+	
+	
 	char a='_';
 	char pass[4]="1234";
 	char empty[4]={'_','_','_','_'};
 	char user_pass[4]={'_','_','_','_'};
-	char Succ[24]="Password is Correct\r\n";
-	char Failed[24]="Password is Wrong\r\n";
+	char user_appear[4]={'_','_','_','_'};
+	char Succ[7]="Correct";
+	char Failed[7]="Wrong!!";
 	int counter=0;
 	int buzzer_counter=0;
 	uint8_t str[16];
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_9,GPIO_PIN_RESET);
+	uint8_t send=' ';
+  /* USER CODE END 2 */
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
   while (1)
   {
-		a=read_char();
+    /* USER CODE END WHILE */
+a=read_char();
 	
 		if(counter<4 && a!='_'){
 		user_pass[counter]=a;
+		user_appear[counter]='*';
 		counter++;
-		sprintf((char*)str, "%c,%c,%c,%c\r\r\r\n", user_pass[0],user_pass[1],user_pass[2],user_pass[3]);	// this should be LCD
-		HAL_UART_Transmit(&huart2, (uint8_t*)&str, sizeof(str), 100);
+		sprintf((char*)str, "%c,%c,%c,%c", user_appear[0],user_appear[1],user_appear[2],user_appear[3]);	// this should be LCD
+		
+		lcd_put_cur(1, 0);
+		lcd_send_string((char*)str);
+		
 		}else if(counter==4){
-			if(strcmparr(user_pass,pass,4)==1)
+			if(strcmparr(user_pass,pass,4)==1) //correct
 				{
-					HAL_UART_Transmit(&huart2, (uint8_t*)&Succ, sizeof(Succ), 100);// this should be LCD
-					HAL_GPIO_WritePin(GPIOA,GPIO_PIN_9,GPIO_PIN_SET); 
-					HAL_Delay(3000);
-					HAL_GPIO_WritePin(GPIOA,GPIO_PIN_9,GPIO_PIN_RESET);
+					
+					sprintf((char*)str, "%s", Succ);
+					lcd_put_cur(1, 0);
+					lcd_send_string((char*)str);
+					
+					memcpy(user_appear, empty, sizeof (empty));
+					HAL_Delay(1000);
+					
+					lcd_put_cur(1, 0);
+					sprintf((char*)str, "%c,%c,%c,%c", user_appear[0],user_appear[1],user_appear[2],user_appear[3]);	
+					lcd_send_string((char*)str);
+				
 					//relay enable
+					send='R';
+					HAL_UART_Transmit(&huart2, &send, sizeof(send), 100);// this should be LCD
+					send=' ';
 				}
 			else 
 				{
 					buzzer_counter++;
-					HAL_UART_Transmit(&huart2, (uint8_t*)&Failed, sizeof(Failed), 100);// this should be LCD
+					
+					sprintf((char*)str, "%s", Failed);
+					lcd_put_cur(1, 0);
+					lcd_send_string((char*)str);
+					
+					memcpy(user_appear, empty, sizeof (empty));
+					HAL_Delay(1000);
+					
+					lcd_put_cur(1, 0);
+					sprintf((char*)str, "%c,%c,%c,%c", user_appear[0],user_appear[1],user_appear[2],user_appear[3]);	
+					lcd_send_string((char*)str);
+					
 					if (buzzer_counter==3){
 						//buzzer_enable
-						HAL_GPIO_WritePin(GPIOA,GPIO_PIN_10,GPIO_PIN_SET); 
-						HAL_Delay(3000);
-						HAL_GPIO_WritePin(GPIOA,GPIO_PIN_10,GPIO_PIN_RESET); 
+						send='B';
+						HAL_UART_Transmit(&huart2, &send, sizeof(send), 100);// this should be LCD
+						send=' ';
 						buzzer_counter=0;
 					}
 					
@@ -385,8 +466,6 @@ int main(void)
 			counter=0;
 			memcpy(user_pass, empty, sizeof (empty));
 		}
-
-    /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
@@ -408,10 +487,15 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+  /** Configure LSE Drive Capability
+  */
+  HAL_PWR_EnableBkUpAccess();
+  __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_LOW);
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSE|RCC_OSCILLATORTYPE_MSI;
+  RCC_OscInitStruct.LSEState = RCC_LSE_ON;
   RCC_OscInitStruct.MSIState = RCC_MSI_ON;
   RCC_OscInitStruct.MSICalibrationValue = 0;
   RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
@@ -433,6 +517,56 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+  /** Enable MSI Auto calibration
+  */
+  HAL_RCCEx_EnableMSIPLLMode();
+}
+
+/**
+  * @brief TIM1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM1_Init(void)
+{
+
+  /* USER CODE BEGIN TIM1_Init 0 */
+
+  /* USER CODE END TIM1_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM1_Init 1 */
+
+  /* USER CODE END TIM1_Init 1 */
+  htim1.Instance = TIM1;
+  htim1.Init.Prescaler = 71;
+  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim1.Init.Period = 0xffff-1;
+  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim1.Init.RepetitionCounter = 0;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM1_Init 2 */
+
+  /* USER CODE END TIM1_Init 2 */
+
 }
 
 /**
@@ -480,32 +614,46 @@ static void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_3|GPIO_PIN_4
-                          |GPIO_PIN_9|GPIO_PIN_10, GPIO_PIN_RESET);
+                          |GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8
+                          |GPIO_PIN_11, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4|GPIO_PIN_5, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PA0 PA1 PA3 PA4
-                           PA9 PA10 */
+                           PA5 PA6 PA7 PA8
+                           PA11 */
   GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_3|GPIO_PIN_4
-                          |GPIO_PIN_9|GPIO_PIN_10;
+                          |GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8
+                          |GPIO_PIN_11;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PA5 PA6 PA7 */
-  GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
+  /*Configure GPIO pins : PB0 PB1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PA9 PA10 */
+  GPIO_InitStruct.Pin = GPIO_PIN_9|GPIO_PIN_10;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PB0 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  /*Configure GPIO pins : PB4 PB5 */
+  GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }
