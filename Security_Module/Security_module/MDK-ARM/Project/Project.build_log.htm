@@ -27,7 +27,42 @@ Project File Date:  12/14/2022
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Project'
-"Project\Project.axf" - 0 Error(s), 0 Warning(s).
+compiling main.c...
+../Core/Src/main.c(87): warning:  #188-D: enumerated type mixed with another type
+  	HAL_GPIO_WritePin(RS_GPIO_Port, RS_Pin, rs);  // rs = 1 for data, rs=0 for command
+../Core/Src/main.c(90): warning:  #188-D: enumerated type mixed with another type
+  	HAL_GPIO_WritePin(D7_GPIO_Port, D7_Pin, ((data>>3)&0x01));
+../Core/Src/main.c(91): warning:  #188-D: enumerated type mixed with another type
+  	HAL_GPIO_WritePin(D6_GPIO_Port, D6_Pin, ((data>>2)&0x01));
+../Core/Src/main.c(92): warning:  #188-D: enumerated type mixed with another type
+  	HAL_GPIO_WritePin(D5_GPIO_Port, D5_Pin, ((data>>1)&0x01));
+../Core/Src/main.c(93): warning:  #188-D: enumerated type mixed with another type
+  	HAL_GPIO_WritePin(D4_GPIO_Port, D4_Pin, ((data>>0)&0x01));
+../Core/Src/main.c(99): warning:  #188-D: enumerated type mixed with another type
+  	HAL_GPIO_WritePin(EN_GPIO_Port, EN_Pin, 1);
+../Core/Src/main.c(101): warning:  #188-D: enumerated type mixed with another type
+  	HAL_GPIO_WritePin(EN_GPIO_Port, EN_Pin, 0);
+../Core/Src/main.c(452): warning:  #223-D: function "sprintf" declared implicitly
+  			sprintf((char*)str, "%s", user_appear);
+../Core/Src/main.c(463): warning:  #223-D: function "sprintf" declared implicitly
+  						sprintf((char*)str2, "%s", user_pass_appear);	// this should be LCD
+../Core/Src/main.c(479): warning:  #223-D: function "sprintf" declared implicitly
+  									sprintf((char*)str2, "%s", user_pass_appear);	// this should be LCD
+../Core/Src/main.c(488): warning:  #223-D: function "sprintf" declared implicitly
+  						sprintf((char*)str, "%s", Succ);
+../Core/Src/main.c(492): warning:  #223-D: function "memcpy" declared implicitly
+  						memcpy(user_appear, empty, sizeof (empty));
+../Core/Src/main.c(522): warning:  #223-D: function "sprintf" declared implicitly
+  										sprintf((char*)str, "%s", Failed);
+../Core/Src/main.c(526): warning:  #223-D: function "memcpy" declared implicitly
+  										memcpy(user_appear, empty, sizeof (empty));
+../Core/Src/main.c(423): warning:  #177-D: variable "pass"  was declared but never referenced
+  	char pass[4]="1234";
+../Core/Src/main.c: 15 warnings, 0 errors
+linking...
+Program Size: Code=9712 RO-data=552 RW-data=16 ZI-data=1840  
+FromELF: creating hex file...
+"Project\Project.axf" - 0 Error(s), 15 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -51,7 +86,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.5.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>

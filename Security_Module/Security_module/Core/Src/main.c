@@ -345,6 +345,35 @@ return a;
 		}
 return 1;
 }
+int search_pass(char arr1[],char*arr2,int size,int user_size ,int index){
+	
+
+
+			for(int i=0;i<size;i++){
+				if (arr1[i]!=arr2[index*size+i]) 
+							return 0;
+			
+			}
+		
+	
+	return 1;
+}
+int search(char id[],char*arr2,int size,int user_size ,char pass[],char *passwords){
+	
+
+	for (int user=0;user<user_size;user++){
+			for(int i=0;i<size;i++){
+				if (id[i]!=arr2[user*size+i]) 
+							break;
+			else if(i==size-1 && id[i]==arr2[user*size+i]){
+				if (search_pass(pass,passwords,4,4,user)==1)
+					return 1;
+			
+			}}
+		
+	}
+	return 0;
+}
 
 /* USER CODE END 0 */
 
@@ -383,23 +412,34 @@ int main(void)
   lcd_init ();
   lcd_put_cur(0, 0);
 	  lcd_clear();
-	lcd_send_string("PASS");
+	lcd_send_string("Userid");
 	lcd_send_string("");
 	lcd_put_cur(1, 0);
 
-	
+	char IDs[4][9]={"900184042","900183162","900183874","900180000"};
+	char Passwords[4][4]={"1234","2000","3456","0000"};
 	
 	char a='_';
-	char pass[4]="1234";
-	char empty[4]={'_','_','_','_'};
-	char user_pass[4]={'_','_','_','_'};
-	char user_appear[4]={'_','_','_','_'};
-	char Succ[7]="Correct";
-	char Failed[7]="Wrong!!";
-	int counter=0;
+	
+
+	char empty[9]="_________";
+	char empty2[4]="____";
+	
+	char user_id[9]="_________";
+	char user_pass[4]="____";
+	
+	char user_pass_appear[9]="____    ";
+	char user_appear[9]="_________";
+	
+	char Succ[9]="Correct:o";
+	char Failed[9]="Wrong!!!!";
+	
+	int counter=0,counter2=0;
 	int buzzer_counter=0;
-	uint8_t str[16];
+	uint8_t str[9];
+		uint8_t str2[9];
 	uint8_t send=' ';
+	int passflag=0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -407,64 +447,121 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-a=read_char();
+		a=read_char();
 	
-		if(counter<4 && a!='_'){
-		user_pass[counter]=a;
-		user_appear[counter]='*';
-		counter++;
-		sprintf((char*)str, "%c,%c,%c,%c", user_appear[0],user_appear[1],user_appear[2],user_appear[3]);	// this should be LCD
+		if(counter<9 && a!='_'){
+			user_id[counter]=a;
+			user_appear[counter]=a;
+			counter++;
+			sprintf((char*)str, "%s", user_appear);
+			
+			lcd_put_cur(1, 0);
+			lcd_send_string((char*)str);
+			lcd_put_cur(1, counter);
 		
-		lcd_put_cur(1, 0);
-		lcd_send_string((char*)str);
+		}else if(passflag==0 && counter==9){
+		lcd_put_cur(0, 0);
+						lcd_clear();
+						lcd_send_string("Pass");
+	
+						sprintf((char*)str2, "%s", user_pass_appear);	// this should be LCD
+						lcd_put_cur(1, 0);
+						lcd_send_string((char*)str2);
+						lcd_put_cur(1, 0);
+						passflag=1;
+		}else if(counter==9){
 		
-		}else if(counter==4){
-			if(strcmparr(user_pass,pass,4)==1) //correct
-				{
+					if(counter2<4)
+						{
+	
+	
+						if ( a!='_')
+							{
+									user_pass[counter2]=a;
+									user_pass_appear[counter2]='*';
+									counter2++;
+									sprintf((char*)str2, "%s", user_pass_appear);	// this should be LCD
+									
+									lcd_put_cur(1, 0);
+									lcd_send_string((char*)str2);
+									lcd_put_cur(1, counter2);
+						
+							}
+						}
+					else if(counter2==4  && search(user_id,(char*)IDs,9,4,user_pass,(char*)Passwords)==1){
+						sprintf((char*)str, "%s", Succ);
+						lcd_put_cur(1, 0);
+						lcd_send_string((char*)str);
+						//clearing
+						memcpy(user_appear, empty, sizeof (empty));
+						memcpy(user_pass_appear, empty2, sizeof (empty2));
+						HAL_Delay(1000);
+						
+						lcd_put_cur(1, 0);
+						sprintf((char*)str, "%s", user_appear);
+						lcd_send_string((char*)str);
 					
-					sprintf((char*)str, "%s", Succ);
-					lcd_put_cur(1, 0);
-					lcd_send_string((char*)str);
-					
-					memcpy(user_appear, empty, sizeof (empty));
-					HAL_Delay(1000);
-					
-					lcd_put_cur(1, 0);
-					sprintf((char*)str, "%c,%c,%c,%c", user_appear[0],user_appear[1],user_appear[2],user_appear[3]);	
-					lcd_send_string((char*)str);
-				
-					//relay enable
-					send='R';
-					HAL_UART_Transmit(&huart2, &send, sizeof(send), 100);// this should be LCD
-					send=' ';
-				}
-			else 
-				{
-					buzzer_counter++;
-					
-					sprintf((char*)str, "%s", Failed);
-					lcd_put_cur(1, 0);
-					lcd_send_string((char*)str);
-					
-					memcpy(user_appear, empty, sizeof (empty));
-					HAL_Delay(1000);
-					
-					lcd_put_cur(1, 0);
-					sprintf((char*)str, "%c,%c,%c,%c", user_appear[0],user_appear[1],user_appear[2],user_appear[3]);	
-					lcd_send_string((char*)str);
-					
-					if (buzzer_counter==3){
-						//buzzer_enable
-						send='B';
+						//relay enable
+						send='R';
 						HAL_UART_Transmit(&huart2, &send, sizeof(send), 100);// this should be LCD
 						send=' ';
 						buzzer_counter=0;
-					}
+						
+						counter=0;
+						counter2=0;
+						passflag=0;
+						lcd_put_cur(0, 0);
+						lcd_clear();
+						
 					
-				}
+					lcd_send_string("Userid");
+					lcd_send_string("");
+					lcd_put_cur(1, 0);
+					
+					}
+					else 
+							{
+										buzzer_counter++;
+										
+										sprintf((char*)str, "%s", Failed);
+										lcd_put_cur(1, 0);
+										lcd_send_string((char*)str);
+										//clearing
+										memcpy(user_appear, empty, sizeof (empty));
+								
+										memcpy(user_pass_appear, empty2, sizeof (empty2));
+										HAL_Delay(1000);
+										
+										lcd_put_cur(1, 0);
+										sprintf((char*)str, "%s", user_appear);	
+										lcd_send_string((char*)str);
+										
+										if (buzzer_counter==3){
+											//buzzer_enable
+											send='B';
+											HAL_UART_Transmit(&huart2, &send, sizeof(send), 100);// this should be LCD
+											send=' ';
+											buzzer_counter=0;
+											
+										}
+										counter=0;
+										counter2=0;
+										passflag=0;
+										
+									lcd_put_cur(0, 0);
+									lcd_clear();
+									
+								
+								lcd_send_string("Userid");
+								lcd_send_string("");
+								lcd_put_cur(1, 0);
+									}					
+					
+					
 			
-			counter=0;
-			memcpy(user_pass, empty, sizeof (empty));
+		
+			
+			//memcpy(user_pass, empty, sizeof (empty));
 		}
 
     /* USER CODE BEGIN 3 */
