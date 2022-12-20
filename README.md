@@ -1,34 +1,19 @@
 ﻿# Smart_Lab_Lystem
 
-## How to build the project
+## How to build & Run the project
 
-(1)
+(1) Setup the connections of the lightening control system based on the diagrams and photos in the wiki page reference below. 
 
-(2)
+(2) Load the code of the lightening control module to its STM32 MCU 
 
-(3)
+(3) Setup the connections of the Security module system based on the diagrams and photos in the wiki page reference below. 
 
-(4)
+(4) Load the code of the Keypad & LCD to the STM32 MCU connected to them
 
-(5)
+(5) Load the code of the Relay and buzzer to the STM32 MCU connected to them
 
-(6)
+(6) Reset All MCUs and they are ready for testing
 
-
-
-## How to run the project
-
-(1)
-
-(2)
-
-(3)
-
-(4)
-
-(5)
-
-(6)
 
 ## Link to the Wiki Page
 
