@@ -2,11 +2,11 @@
 
 ## How to build & Run the project
 
-(1) Setup the connections of the lightening control system based on the diagrams and photos in the wiki page reference below. 
+(1) Setup the connections of the lightening control system based on the diagrams and photos in the wiki page referenced below. 
 
 (2) Load the code of the lightening control module to its STM32 MCU 
 
-(3) Setup the connections of the Security module system based on the diagrams and photos in the wiki page reference below. 
+(3) Setup the connections of the Security module system based on the diagrams and photos in the wiki page referenced below. 
 
 (4) Load the code of the Keypad & LCD to the STM32 MCU connected to them
 
